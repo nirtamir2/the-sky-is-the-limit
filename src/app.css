@@ -102,59 +102,18 @@
   body {
     /*@apply bg-background text-foreground;*/
     font-feature-settings:
-            "rlig" 1,
-            "calt" 1;
+      "rlig" 1,
+      "calt" 1;
   }
 }
 
 @layer base {
   body {
-    -webkit-touch-callout: none;
-
+    @apply w-screen min-h-screen bg-gradient-to-b from-[#085cb3] via-[#2178d1] to-[#62a0d8] overflow-hidden;
     min-height: 100dvh;
-    background-color: theme(colors.gray.900);
-    background: linear-gradient(
-            to bottom right,
-            theme(colors.gray.900),
-            theme(colors.gray.800)
-    );
-    color: theme(colors.white);
-  }
-
-  body::before {
-    content: "";
-    height: 100dvh;
-    width: 100dvw;
-    position: fixed;
-    background-image: radial-gradient(
-            theme(colors.gray.400 / 40%) 1px,
-            theme(colors.gray.800 / 40%) 1px
-    );
-    background-size: 20px 20px;
-    top: 0;
-    transform-style: flat;
-    pointer-events: none;
-    z-index: -100;
   }
 }
 
-@layer utilities {
-  .step {
-    counter-increment: step;
-  }
-
-  .step:before {
-    @apply absolute inline-flex h-9 w-9 items-center justify-center rounded-full border-4 border-background bg-muted text-center -indent-px font-mono text-base font-medium;
-    @apply ml-[-50px] mt-[-4px];
-    content: counter(step);
-  }
-}
-
-@media (max-width: 640px) {
-  .container {
-    @apply px-4;
-  }
-}
 
 ::-webkit-scrollbar {
   width: 16px;
