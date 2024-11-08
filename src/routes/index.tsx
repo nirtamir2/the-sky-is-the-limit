@@ -1,6 +1,7 @@
 import { Cloud } from "~/components/Cloud";
 import { createSignal } from "solid-js";
 import { SVGFilterEffect, useSVGFilterEffect } from "./SVGFilterEffect";
+import { CloudyText } from "../components/CloudyText";
 
 export default function Component() {
   const [text, setText] = createSignal(
@@ -27,7 +28,7 @@ export default function Component() {
           seed={bigNoiseSeed()}
           scale={displacementMapScale()}
         >
-          <div class="text-7xl font-extrabold leading-tight  ">{text()}</div>
+          <CloudyText>{text()}</CloudyText>
           {/*<img src="https://i.ibb.co/2sxT6jZ/Retro-80s-Human-Flying-Poster-cropped.jpg"/>*/}
         </SVGFilterEffect>
 

@@ -1,4 +1,4 @@
-import type { JSX , JSXElement} from "solid-js";
+import type { JSX, JSXElement } from "solid-js";
 import { createSignal } from "solid-js";
 
 /**
@@ -101,8 +101,8 @@ export function SVGFilterEffect(props: {
 
 export function useSVGFilterEffect() {
   const [isAnimating, setIsAnimating] = createSignal(false);
-  const [displacementMapScale, setDisplacementMapScale] = createSignal(100);
-  const [bigNoiseSeed, setBigNoiseSeed] = createSignal<number>(1000);
+  const [displacementMapScale, setDisplacementMapScale] = createSignal(0);
+  const [bigNoiseSeed, setBigNoiseSeed] = createSignal<number>(0);
   const [style, setStyle] = createSignal<JSX.CSSProperties>({
     display: "block",
     transform: "scale(1)",
