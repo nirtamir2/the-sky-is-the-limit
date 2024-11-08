@@ -1,5 +1,6 @@
-import {Cloud} from "~/components/Cloud";
-import {createSignal} from "solid-js";
+import { Cloud } from "~/components/Cloud";
+import type { JSXElement } from "solid-js";
+import { createSignal } from "solid-js";
 
 /**
  * Easing function for smooth animation (Ease Out Cubic)
@@ -21,13 +22,93 @@ function getOpacity(progress: number) {
   }
 }
 
+function SVGFilterEffect(props: {
+  seed: number;
+  scale: number;
+  ref: HTMLDivElement;
+  children: JSXElement;
+}) {
+  return (
+    <>
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          {/*Define 'dissolve-filter' to create the dissolve effect.*/}
+          {/*Enlarged filter area to prevent clipping.*/}
+          <filter
+            id="dissolve-filter"
+            x="-200%"
+            y="-200%"
+            width="500%"
+            height="500%"
+            color-interpolation-filters="sRGB"
+            overflow="visible"
+          >
+            {/*Generate large-scale fractal noise*/}
+            <feTurbulence
+              seed={props.seed}
+              type="fractalNoise"
+              baseFrequency="0.004"
+              numOctaves="1"
+              result="bigNoise"
+            />
+
+            {/*Enhance noise contrast */}
+            <feComponentTransfer in="bigNoise" result="bigNoiseAdjusted">
+              <feFuncR type="linear" slope="3" intercept="-1" />
+              <feFuncG type="linear" slope="3" intercept="-1" />
+            </feComponentTransfer>
+
+            {/*Generate fine-grained fractal noise -->*/}
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="1"
+              numOctaves="1"
+              result="fineNoise"
+            />
+
+            {/*Merge the adjusted big noise and fine noise -->*/}
+            <feMerge result="mergedNoise">
+              <feMergeNode in="bigNoiseAdjusted" />
+              <feMergeNode in="fineNoise" />
+            </feMerge>
+
+            {/*Apply displacement map to distort the image -->*/}
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="mergedNoise"
+              scale={props.scale}
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
+      <div
+        ref={props.ref}
+        style={{
+          width: "100%",
+          height: "100%",
+          "object-fit": "cover",
+          filter: "url(#dissolve-filter)",
+          "-webkit-filter": "url(#dissolve-filter)",
+          transform: "scale(1)",
+          opacity: "1",
+          "border-radius": "24px",
+        }}
+      >
+        {props.children}
+      </div>
+    </>
+  );
+}
+
 export default function Component() {
   const [text, setText] = createSignal("");
 
   let displayedImage: HTMLDivElement = null!;
   const [isAnimating, setIsAnimating] = createSignal(false);
   const [displacementMapScale, setDisplacementMapScale] = createSignal(0);
-  const [bigNoiseSeed, setBigNoiseSeed] = createSignal<number | undefined>();
+  const [bigNoiseSeed, setBigNoiseSeed] = createSignal<number>(0);
 
   /**
    * Displays the next image in the array with reset styles
@@ -53,75 +134,13 @@ export default function Component() {
             return setText(e.target.value);
           }}
         />
-        <svg xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            {/*Define 'dissolve-filter' to create the dissolve effect.*/}
-            {/*Enlarged filter area to prevent clipping.*/}
-            <filter
-              id="dissolve-filter"
-              x="-200%"
-              y="-200%"
-              width="500%"
-              height="500%"
-              color-interpolation-filters="sRGB"
-              overflow="visible"
-            >
-              {/*Generate large-scale fractal noise*/}
-              <feTurbulence
-                seed={bigNoiseSeed()}
-                type="fractalNoise"
-                baseFrequency="0.004"
-                numOctaves="1"
-                result="bigNoise"
-              />
-
-              {/*Enhance noise contrast */}
-              <feComponentTransfer in="bigNoise" result="bigNoiseAdjusted">
-                <feFuncR type="linear" slope="3" intercept="-1" />
-                <feFuncG type="linear" slope="3" intercept="-1" />
-              </feComponentTransfer>
-
-              {/*Generate fine-grained fractal noise -->*/}
-              <feTurbulence
-                type="fractalNoise"
-                baseFrequency="1"
-                numOctaves="1"
-                result="fineNoise"
-              />
-
-              {/*Merge the adjusted big noise and fine noise -->*/}
-              <feMerge result="mergedNoise">
-                <feMergeNode in="bigNoiseAdjusted" />
-                <feMergeNode in="fineNoise" />
-              </feMerge>
-
-              {/*Apply displacement map to distort the image -->*/}
-              <feDisplacementMap
-                in="SourceGraphic"
-                in2="mergedNoise"
-                scale={displacementMapScale()}
-                xChannelSelector="R"
-                yChannelSelector="G"
-              />
-            </filter>
-          </defs>
-        </svg>
-        <div
+        <SVGFilterEffect
           ref={displayedImage}
-          class="py-4"
-          style={{
-            width: "100%",
-            height: "100%",
-            "object-fit": "cover",
-            filter: "url(#dissolve-filter)",
-            "-webkit-filter": "url(#dissolve-filter)",
-            transform: "scale(1)",
-            opacity: "1",
-            "border-radius": "24px",
-          }}
+          seed={bigNoiseSeed()}
+          scale={displacementMapScale()}
         >
           {text()}
-        </div>
+        </SVGFilterEffect>
 
         <div>
           <button
