@@ -1,0 +1,72 @@
+{
+  "name": "tierlist",
+  "type": "module",
+  "scripts": {
+    "build": "vinxi build",
+    "ci": "pnpm run --parallel --aggregate-output \"/^(lint|format|type-check).*/\"",
+    "db:generate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx --env-file=.env ./src/drizzle/seed.ts",
+    "dev": "vinxi dev",
+    "format": "prettier \"**/*\" --write --ignore-unknown --log-level silent",
+    "lint": "eslint --fix \"./src/**/*.{ts,tsx,js,jsx}\"",
+    "prepare": "husky",
+    "start": "vinxi start",
+    "type-check": "tsc --pretty --noEmit"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,md}": "eslint --cache --fix",
+    "*.{ts,tsx,css,html,svg,md,json,js}": "prettier --write"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.1.0",
+    "@kobalte/core": "^0.13.7",
+    "@neondatabase/serverless": "^0.10.1",
+    "@solid-primitives/media": "^2.2.9",
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.14.8",
+    "@solidjs/start": "^1.0.6",
+    "autoprefixer": "^10.4.19",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.35.2",
+    "jiti": "^2.3.3",
+    "postcss": "^8.4.40",
+    "solid-js": "^1.9.2",
+    "tailwindcss": "^3.4.7",
+    "tailwindcss-animate": "^1.0.7",
+    "vinxi": "^0.4.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint-react/eslint-plugin": "^1.15.0",
+    "@locator/babel-jsx": "^0.4.4",
+    "@nirtamir2/eslint-config": "0.0.2-beta.17",
+    "@total-typescript/ts-reset": "^0.6.1",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/node": "^22.7.5",
+    "@typescript-eslint/eslint-plugin": "^8.8.1",
+    "@typescript-eslint/parser": "^8.8.1",
+    "code-inspector-plugin": "^0.17.2",
+    "drizzle-kit": "^0.26.2",
+    "eslint": "^9.12.0",
+    "eslint-plugin-format": "^0.1.2",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "eslint-plugin-solid": "^0.14.3",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "prettier-plugin-packagejson": "^2.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "tsx": "^4.19.1",
+    "type-fest": "^4.26.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.1.6",
+    "vite-plugin-solid-svg": "^0.8.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
