@@ -110,16 +110,66 @@ export default function Component() {
   const [displacementMapScale, setDisplacementMapScale] = createSignal(0);
   const [bigNoiseSeed, setBigNoiseSeed] = createSignal<number>(0);
 
-  /**
-   * Displays the next image in the array with reset styles
-   */
-  function showNextImage() {
-    // displayedImage.src = images[currentIndex];
+  function handleEffect() {
+    // Prevent animation if already animating or image is hidden
+    if (isAnimating() || displayedImage.style.display === "none") {
+      return;
+    }
+    setIsAnimating(true);
 
+    // eslint-disable-next-line sonarjs/pseudo-random
+    setBigNoiseSeed(Math.floor(Math.random() * 1000)); // Vary the noise pattern
+
+    const duration = 1000; // Animation duration in milliseconds
+    const startTime = performance.now(); // Record the start time
+
+    /**
+     * Animation loop using requestAnimationFrame for smooth updates
+     * @param {number} currentTime - The current time in milliseconds
+     */
+    function animate(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1); // Clamp progress between 0 and 1
+      const easedProgress = easeOutCubic(progress); // Apply easing
+
+      // Calculate and apply displacement scale based on eased progress
+      const displacementScale = easedProgress * maxDisplacementScale;
+      setDisplacementMapScale(displacementScale);
+
+      // Slightly scale the image for a dynamic effect
+      const scaleFactor = 1 + 0.1 * easedProgress;
+      displayedImage.style.transform = `scale(${scaleFactor})`;
+
+      // Adjust image opacity to create a fading effect
+      displayedImage.style.opacity = getOpacity(progress);
+
+      if (progress < 1) {
+        // Continue the animation
+        requestAnimationFrame(animate);
+      } else {
+        // Reset styles and show the next image after animation completes
+        setTimeout(() => {
+          displayedImage.style.display = "none";
+          displayedImage.style.transform = "scale(1)";
+          displayedImage.style.opacity = "1";
+          setDisplacementMapScale(0);
+          setIsAnimating(false);
+          // displayedImage.src = images[currentIndex];
+
+          displayedImage.style.display = "block";
+          displayedImage.style.transform = "scale(1)";
+          displayedImage.style.opacity = "1";
+          setDisplacementMapScale(0);
+        }, 0);
+      }
+    }
+
+    // Start the animation
+    requestAnimationFrame(animate);
+
+    // Initialize the first image display
+    // displayedImage.src = images[currentIndex];
     displayedImage.style.display = "block";
-    displayedImage.style.transform = "scale(1)";
-    displayedImage.style.opacity = "1";
-    setDisplacementMapScale(0);
   }
 
   return (
@@ -143,68 +193,7 @@ export default function Component() {
         </SVGFilterEffect>
 
         <div>
-          <button
-            type="button"
-            class="bg-white p-2"
-            onClick={() => {
-              /**
-               * Handles the delete button click event to trigger the dissolve animation
-               */
-              // Prevent animation if already animating or image is hidden
-              if (isAnimating() || displayedImage.style.display === "none")
-                return;
-              setIsAnimating(true);
-
-              // eslint-disable-next-line sonarjs/pseudo-random
-              setBigNoiseSeed(Math.floor(Math.random() * 1000)); // Vary the noise pattern
-
-              const duration = 1000; // Animation duration in milliseconds
-              const startTime = performance.now(); // Record the start time
-
-              /**
-               * Animation loop using requestAnimationFrame for smooth updates
-               * @param {number} currentTime - The current time in milliseconds
-               */
-              function animate(currentTime: number) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1); // Clamp progress between 0 and 1
-                const easedProgress = easeOutCubic(progress); // Apply easing
-
-                // Calculate and apply displacement scale based on eased progress
-                const displacementScale = easedProgress * maxDisplacementScale;
-                setDisplacementMapScale(displacementScale);
-
-                // Slightly scale the image for a dynamic effect
-                const scaleFactor = 1 + 0.1 * easedProgress;
-                displayedImage.style.transform = `scale(${scaleFactor})`;
-
-                // Adjust image opacity to create a fading effect
-                displayedImage.style.opacity = getOpacity(progress);
-
-                if (progress < 1) {
-                  // Continue the animation
-                  requestAnimationFrame(animate);
-                } else {
-                  // Reset styles and show the next image after animation completes
-                  setTimeout(() => {
-                    displayedImage.style.display = "none";
-                    displayedImage.style.transform = "scale(1)";
-                    displayedImage.style.opacity = "1";
-                    setDisplacementMapScale(0);
-                    setIsAnimating(false);
-                    showNextImage();
-                  }, 0);
-                }
-              }
-
-              // Start the animation
-              requestAnimationFrame(animate);
-
-              // Initialize the first image display
-              // displayedImage.src = images[currentIndex];
-              displayedImage.style.display = "block";
-            }}
-          >
+          <button type="button" class="bg-white p-2" onClick={handleEffect}>
             Do
           </button>
         </div>
