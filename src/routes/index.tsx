@@ -1,6 +1,9 @@
 import { Cloud } from "~/components/Cloud";
 import { createSignal } from "solid-js";
-import { SVGFilterEffect, useSVGFilterEffect } from "./SVGFilterEffect";
+import {
+  SVGFilterEffect,
+  useSVGFilterEffect,
+} from "../components/SVGFilterEffect";
 import { CloudyText } from "../components/CloudyText";
 
 export default function Component() {
