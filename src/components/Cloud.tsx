@@ -9,7 +9,7 @@ export function Cloud() {
 
   createEffect(() => {
     const animate = () => {
-      const t = Date.now() / 10000;
+      const t = Date.now() / 1000;
       if (cloudBaseRef)
         cloudBaseRef.style.transform = `translate(${Math.sin(t) * 10}px, ${Math.cos(t) * 5}px)`;
       if (cloudBackRef)
